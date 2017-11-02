@@ -14,11 +14,10 @@ public static void createAndPrintQuestion()
 
    Question q1 = initQuestion("Who won the Premier League in 2017?", "Chelsea");
    int questionNumber = 1;
-   String answer = "Chelsea";
+   String answer = input(questionToString(q1));
    if(questionNumber == 1)
    {
 
-     System.out.println(questionToString(q1));
      if(answer.equalsIgnoreCase(getAnswer(q1)))
      {
 
@@ -67,6 +66,22 @@ public static Question setAnswer (Question q, String answer)
 {
  q.answer = answer;
  return q;
+}
+
+public static String input(String message)
+{
+
+  Scanner scanner = new Scanner(System.in);
+  println(message);
+  String ans = scanner.nextLine();
+  return ans;
+
+}
+public static void println(String m)
+{
+
+  System.out.println(m);
+
 }
 }
 class Question
