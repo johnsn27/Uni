@@ -4,34 +4,87 @@ class miniproject
 
 public static void main(String []p)
 {
-   createAndPrintQuestion();
+
+   playGame();
    System.exit(0);
+
 }
 
-// A simple test method setting a student record then printing it out
-public static void createAndPrintQuestion()
+public static void playGame()
+{
+
+  int score = 0;
+  int count = 1;
+  Boolean correct;
+  for(int i = 1; i<2; i++)
+  {
+
+    correct = createAndPrintQuestion();
+
+    while(!correct && count <= 3)
+    {
+      count++;
+      println("Wrong");
+
+    }
+    prInt(score);
+
+  }
+
+}
+public static Boolean createAndPrintQuestion()
 {
 
    Question q1 = initQuestion("Who won the Premier League in 2017?", "Chelsea");
    int questionNumber = 1;
    String answer = input(questionToString(q1));
-   if(questionNumber == 1)
-   {
+   Boolean b = marking(q1, answer);
+   return b;
 
-     if(answer.equalsIgnoreCase(getAnswer(q1)))
-     {
+}
+public static Boolean marking(Question q, String a) //this is how to pass
+{
 
-       System.out.println("YAY");
+  Boolean correct = true;
+  String userAnswer = a;
+  Question correctAnswer = q;
+  if(answerToString(q).equalsIgnoreCase(a))
+  {
 
-     }
-   }
-   return;
+    println("Woo");
+
+  }
+  else
+  {
+
+    correct = false;
+
+  }
+  return correct;
+
+}
+public static int score()
+{
+
+  int score;
+  score = (int)(Math.random()*6) + 1;
+  System.out.println("Score: " + score);
+  return score;
+
 }
 public static String questionToString(Question q)
 {
-    String result = getQuestion(q);
 
+    String result = getQuestion(q);
     return result;
+
+}
+public static String answerToString(Question q)
+{
+
+    String result = getAnswer(q);
+    return result;
+
 }
 public static Question initQuestion(String question, String answer)
 {
@@ -81,6 +134,12 @@ public static void println(String m)
 {
 
   System.out.println(m);
+
+}
+public static void prInt(int i)
+{
+
+  println(Integer.toString(i));
 
 }
 }
