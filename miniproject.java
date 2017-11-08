@@ -20,10 +20,27 @@ public static void playGame()
   {
 
     correct = createAndPrintQuestion();
-
-    while(!correct && count <= 3)
+    if(!correct)
     {
-      count++;
+      while(!correct && count <= 3)
+      {
+
+        count++;
+        println("Wrong");
+        correct = createAndPrintQuestion();
+
+
+      }
+    }
+    if(correct)
+    {
+
+      score = score + score();
+
+    }
+    else
+    {
+
       println("Wrong");
 
     }
@@ -36,6 +53,11 @@ public static Boolean createAndPrintQuestion()
 {
 
    Question q1 = initQuestion("Who won the Premier League in 2017?", "Chelsea");
+   Question q2 = initQuestion("Who won the World Cup in 2014", "Germany");
+   Question q3 = initQuestion("Who won the Ashes in 2015", "England");
+   Question q4 = initQuestion("Who won the mens singles at Wimbledon 2017", "Roger Federer");
+   Question q5 = initQuestion("Who won the 100m sprint at the 2017 World Championships?", "Justin Gatlin");
+   initArray(q1,q2,q3,q4,q5);
    int questionNumber = 1;
    String answer = input(questionToString(q1));
    Boolean b = marking(q1, answer);
@@ -70,6 +92,34 @@ public static int score()
   score = (int)(Math.random()*6) + 1;
   System.out.println("Score: " + score);
   return score;
+
+}
+public static void initArray(Question q1, Question q2, Question q3, Question q4, Question q5)
+{
+
+  int questions = 5;
+  String[] questionBank = new String[questions];
+  questionBank[0] = questionToString(q1);
+  questionBank[1] = questionToString(q2);
+  questionBank[2] = questionToString(q3);
+  questionBank[3] = questionToString(q4);
+  questionBank[4] = questionToString(q5);
+  questionToAsk(questionBank);
+
+}
+public static void questionToAsk(String[] questionBank)
+{
+
+  int questionNumber = randomQuestionNumber();
+  println(questionBank[questionNumber]);
+
+}
+public static int randomQuestionNumber()
+{
+
+  Random rand = new Random();
+  int value = rand.nextInt(4);
+  return value;
 
 }
 public static String questionToString(Question q)
