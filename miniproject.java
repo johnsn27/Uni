@@ -4,35 +4,136 @@ class miniproject
 
 public static void main(String []p)
 {
-   createAndPrintQuestion();
+
+   createQuestion();
    System.exit(0);
+
 }
 
-// A simple test method setting a student record then printing it out
-public static void createAndPrintQuestion()
+public static void playGame()
+{
+
+  int score = 0;
+  int count = 1;
+  Boolean correct;
+
+  prInt(score);
+
+
+
+}
+public static void createQuestion()
 {
 
    Question q1 = initQuestion("Who won the Premier League in 2017?", "Chelsea");
-   int questionNumber = 1;
-   String answer = "Chelsea";
-   if(questionNumber == 1)
-   {
+   Question q2 = initQuestion("Who won the World Cup in 2014?", "Germany");
+   Question q3 = initQuestion("Who won the Ashes in 2015?", "England");
+   Question q4 = initQuestion("Who won the mens singles at Wimbledon 2017?", "Roger Federer");
+   Question q5 = initQuestion("Who won the 100m sprint at the 2017 World Championships?", "Justin Gatlin");
+   initArray(q1,q2,q3,q4,q5);
 
-     System.out.println(questionToString(q1));
-     if(answer.equalsIgnoreCase(getAnswer(q1)))
-     {
+}
+public static void userAnswer(String[] questionBank)
+{
 
-       System.out.println("YAY");
+  int questionNumber = randomQuestionNumber();
+  String question = questionBank[questionNumber];
+  String answer = input(questionBank[questionNumber]);
+  marking(questionBank[questionNumber], question, answer);
 
-     }
-   }
-   return;
+}
+public static void marking(String correctAnswer, String question, String userAnswer) //this is how to pass
+{
+
+  Boolean correct = true;
+  if(userAnswer.equalsIgnoreCase(correctAnswer))
+  {
+
+    println("Woo");
+
+  }
+  else
+  {
+
+    println("Wrong- try again");
+    retryUserAnswer(correctAnswer, question);
+
+  }
+
+}
+public static void retryUserAnswer(String correctAnswer, String question)
+{
+
+  String answer = input(question);
+  if(answer.equalsIgnoreCase(correctAnswer))
+  {
+
+    println("Correct");
+
+  }
+  else
+  {
+
+    println("Wrong- try again");
+    answer = input(question);
+    if(answer.equalsIgnoreCase(correctAnswer))
+    {
+
+      println("Correct");
+
+    }
+    else
+    {
+
+      println("Wrong- try again");
+
+    }
+  }
+
+}
+public static int score()
+{
+
+  int score;
+  score = (int)(Math.random()*6) + 1;
+  System.out.println("Score: " + score);
+  return score;
+
+}
+public static void initArray(Question q1, Question q2, Question q3, Question q4, Question q5)
+{
+
+  int questions = 5;
+  String[] questionBank = new String[questions];
+  questionBank[0] = questionToString(q1);
+  questionBank[1] = questionToString(q2);
+  questionBank[2] = questionToString(q3);
+  questionBank[3] = questionToString(q4);
+  questionBank[4] = questionToString(q5);
+  userAnswer(questionBank);
+
+}
+public static int randomQuestionNumber()
+{
+
+  Random rand = new Random();
+  int value = rand.nextInt(4);
+  return value;
+
 }
 public static String questionToString(Question q)
 {
-    String result = getQuestion(q);
 
+    String result = getQuestion(q);
     return result;
+
+}
+public static String answerToString(Question q)
+{
+
+    String result = getAnswer(q);
+    return result;
+
 }
 public static Question initQuestion(String question, String answer)
 {
@@ -67,6 +168,28 @@ public static Question setAnswer (Question q, String answer)
 {
  q.answer = answer;
  return q;
+}
+
+public static String input(String message)
+{
+
+  Scanner scanner = new Scanner(System.in);
+  println(message);
+  String ans = scanner.nextLine();
+  return ans;
+
+}
+public static void println(String m)
+{
+
+  System.out.println(m);
+
+}
+public static void prInt(int i)
+{
+
+  println(Integer.toString(i));
+
 }
 }
 class Question
