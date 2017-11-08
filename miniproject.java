@@ -14,63 +14,46 @@ public static void playGame()
 {
 
   int score = 0;
-  int count = 1;
   Boolean correct;
-  for(int i = 1; i<2; i++)
+
+  for(int questionsAsked = 0; questionsAsked <3; questionsAsked++)
   {
 
-    correct = createAndPrintQuestion();
-    if(!correct)
-    {
-      while(!correct && count <= 3)
-      {
-
-        count++;
-        println("Wrong");
-        correct = createAndPrintQuestion();
-
-
-      }
-    }
-    if(correct)
-    {
-
-      score = score + score();
-
-    }
-    else
-    {
-
-      println("Wrong");
-
-    }
-    prInt(score);
+    createQuestion();
+    score = score + score();
 
   }
 
+  prInt(score);
+
+
+
 }
-public static Boolean createAndPrintQuestion()
+public static void createQuestion()
 {
 
    Question q1 = initQuestion("Who won the Premier League in 2017?", "Chelsea");
-   Question q2 = initQuestion("Who won the World Cup in 2014", "Germany");
-   Question q3 = initQuestion("Who won the Ashes in 2015", "England");
-   Question q4 = initQuestion("Who won the mens singles at Wimbledon 2017", "Roger Federer");
+   Question q2 = initQuestion("Who won the World Cup in 2014?", "Germany");
+   Question q3 = initQuestion("Who won the Ashes in 2015?", "England");
+   Question q4 = initQuestion("Who won the mens singles at Wimbledon 2017?", "Roger Federer");
    Question q5 = initQuestion("Who won the 100m sprint at the 2017 World Championships?", "Justin Gatlin");
    initArray(q1,q2,q3,q4,q5);
-   int questionNumber = 1;
-   String answer = input(questionToString(q1));
-   Boolean b = marking(q1, answer);
-   return b;
 
 }
-public static Boolean marking(Question q, String a) //this is how to pass
+public static void userAnswer(String[] questionBank, String[] answerBank)
+{
+
+  int questionNumber = randomQuestionNumber();
+  String question = questionBank[questionNumber];
+  String answer = input(questionBank[questionNumber]);
+  marking(answerBank[questionNumber], question, answer);
+
+}
+public static void marking(String correctAnswer, String question, String userAnswer) //this is how to pass
 {
 
   Boolean correct = true;
-  String userAnswer = a;
-  Question correctAnswer = q;
-  if(answerToString(q).equalsIgnoreCase(a))
+  if(userAnswer.equalsIgnoreCase(correctAnswer))
   {
 
     println("Woo");
@@ -79,10 +62,40 @@ public static Boolean marking(Question q, String a) //this is how to pass
   else
   {
 
-    correct = false;
+    println("Wrong- try again");
+    retryUserAnswer(correctAnswer, question);
 
   }
-  return correct;
+
+}
+public static void retryUserAnswer(String correctAnswer, String question)
+{
+
+  String answer = input(question);
+  if(answer.equalsIgnoreCase(correctAnswer))
+  {
+
+    println("Correct");
+
+  }
+  else
+  {
+
+    println("Wrong- try again");
+    answer = input(question);
+    if(answer.equalsIgnoreCase(correctAnswer))
+    {
+
+      println("Correct");
+
+    }
+    else
+    {
+
+      println("Wrong- try again");
+
+    }
+  }
 
 }
 public static int score()
@@ -90,7 +103,6 @@ public static int score()
 
   int score;
   score = (int)(Math.random()*6) + 1;
-  System.out.println("Score: " + score);
   return score;
 
 }
@@ -99,19 +111,18 @@ public static void initArray(Question q1, Question q2, Question q3, Question q4,
 
   int questions = 5;
   String[] questionBank = new String[questions];
+  String[] answerBank = new String[questions];
   questionBank[0] = questionToString(q1);
   questionBank[1] = questionToString(q2);
   questionBank[2] = questionToString(q3);
   questionBank[3] = questionToString(q4);
   questionBank[4] = questionToString(q5);
-  questionToAsk(questionBank);
-
-}
-public static void questionToAsk(String[] questionBank)
-{
-
-  int questionNumber = randomQuestionNumber();
-  println(questionBank[questionNumber]);
+  answerBank[0] = answerToString(q1);
+  answerBank[1] = answerToString(q2);
+  answerBank[2] = answerToString(q3);
+  answerBank[3] = answerToString(q4);
+  answerBank[4] = answerToString(q5);
+  userAnswer(questionBank, answerBank);
 
 }
 public static int randomQuestionNumber()
