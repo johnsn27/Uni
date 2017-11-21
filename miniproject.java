@@ -13,23 +13,35 @@ public static void main(String []p)
 public static void playGame()
 {
 
-  int score = 0;
+  int totalScore = 0;
+  int questionScore = 0;
+  int questions = 5;
+  int questionsAsked;
   Boolean correct;
+  int[][] scoreAndQuestion = new int[questions][2];
 
-  for(int questionsAsked = 0; questionsAsked <3; questionsAsked++)
+
+  for(questionsAsked = 0; questionsAsked <questions; questionsAsked++)
   {
 
-    createQuestion();
-    score = score + score();
+    createQuestion(questions);
+    questionScore = score(questions);
+    totalScore = totalScore + questionScore;
+    scoreAndQuestion[questionsAsked][0] = questionScore;
+    scoreAndQuestion[questionsAsked][1] = questionsAsked + 1;
+    prInt(scoreAndQuestion[questionsAsked][0]);
+    prInt(scoreAndQuestion[questionsAsked][1]);
 
   }
-
-  prInt(score);
-
+  System.out.print("Score: ");
+  quicksort(scoreAndQuestion,0,4);
+  report("Result is: " + printarray(scoreAndQuestion, questionsAsked));
+  System.out.print("Total Score: ");
+  prInt(totalScore);
 
 
 }
-public static void createQuestion()
+public static void createQuestion(int questions)
 {
 
    Question q1 = initQuestion("Who won the Premier League in 2017?", "Chelsea");
@@ -37,7 +49,7 @@ public static void createQuestion()
    Question q3 = initQuestion("Who won the Ashes in 2015?", "England");
    Question q4 = initQuestion("Who won the mens singles at Wimbledon 2017?", "Roger Federer");
    Question q5 = initQuestion("Who won the 100m sprint at the 2017 World Championships?", "Justin Gatlin");
-   initArray(q1,q2,q3,q4,q5);
+   initArray(q1,q2,q3,q4,q5,questions);
 
 }
 public static void userAnswer(String[] questionBank, String[] answerBank)
@@ -49,14 +61,14 @@ public static void userAnswer(String[] questionBank, String[] answerBank)
   marking(answerBank[questionNumber], question, answer);
 
 }
-public static void marking(String correctAnswer, String question, String userAnswer) //this is how to pass
+public static void marking(String correctAnswer, String question, String userAnswer)
 {
 
   Boolean correct = true;
   if(userAnswer.equalsIgnoreCase(correctAnswer))
   {
 
-    println("Woo");
+    println("Correct");
 
   }
   else
@@ -98,18 +110,17 @@ public static void retryUserAnswer(String correctAnswer, String question)
   }
 
 }
-public static int score()
+public static int score(int questions)
 {
 
   int score;
-  score = (int)(Math.random()*6) + 1;
-  return score;
+  score = (int)(Math.random()*6) + 1;  //set up array and store scores for each question in it
+  return score; //look at main in quicksort and try and integrate them in
 
 }
-public static void initArray(Question q1, Question q2, Question q3, Question q4, Question q5)
+public static void initArray(Question q1, Question q2, Question q3, Question q4, Question q5, int questions)
 {
 
-  int questions = 5;
   String[] questionBank = new String[questions];
   String[] answerBank = new String[questions];
   questionBank[0] = questionToString(q1);
@@ -203,6 +214,75 @@ public static void prInt(int i)
   println(Integer.toString(i));
 
 }
+static String printarray (int[][] array, int questionsAsked)
+{
+   String txt = "";
+   int j;
+   println("");
+   for (int i=0; i < array.length; i++)
+   {
+     j = i+1;
+     txt = txt+"Score: " + array[i][0] + " question number: " + array[i][1] + "\n";
+ }
+ if (array.length > 0) txt = txt+array[array.length - 1];
+
+ return txt;
+
+}
+
+static void report (String txt)
+{
+   System.out.println(txt);
+}
+
+
+// quicksort: algorithm based no Gosling's variant from nist
+static void quicksort (int[][] array, int from, int upto)
+{
+    // print details of call
+
+
+    if (from < upto)
+    {
+
+
+      // make the pivot value middle of array
+      int pivot = array[(from+upto)/2][0];
+
+      // set up two pointers into the array
+      int lower = from, upper = upto;
+
+      while (lower <= upper)
+      {
+        // first move lower up over small elements
+    while ((array[lower][0] < pivot) && (lower < upto)) { lower++; }
+
+        // otherwise move upper down over large elements
+    while ((array[upper][0] > pivot) && (upper > from)) { upper--; }
+
+        // if pointers haven't crossed
+        if (lower <= upper)
+        {
+      int tmp = array[upper][0];
+      array[upper][0] = array[lower][0];
+      array[lower][0] = tmp;
+      tmp = array[upper][1];
+      array[upper][1] = array[lower][1];
+      array[lower][1] = tmp;
+      lower++;
+      upper--;
+    }
+    }
+
+
+
+   if (from < upper) quicksort(array,from,upper);
+   if (lower < upto) quicksort(array,lower,upto);
+
+  }
+
+
+ }
 }
 class Question
 {
