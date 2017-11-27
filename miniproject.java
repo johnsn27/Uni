@@ -1,27 +1,59 @@
 import java.util.*;
+import java.io.*;
 class miniproject
 {
 
 public static void main(String []p)
 {
 
-   playGame();
+  String ans = input("Do you want to resume a previous game?");
+  if(ans.equalsIgnoreCase("yes"))
+  {
+
+    try{
+      askToResume();
+    }catch(IOException e){
+      e.printStackTrace();
+    }
+
+  }
+  else
+  {
+
+   playGame(0, 0);
+
+  }
    System.exit(0);
 
 }
-
-public static void playGame()
+public static void askToResume() throws IOException
 {
 
-  int totalScore = 0;
+  BufferedReader inStream = new BufferedReader(new FileReader("mydata2.txt"));
+  String[][] names = new String[5][2];
+  String totalScore;
+  String questionNumber;
+  names[0][0] = inStream.readLine();
+  names[0][1] = inStream.readLine();
+  totalScore = names[0][0];
+  questionNumber = names[0][1];
+  println(totalScore);
+  println(questionNumber);
+  int intTotalScore = Integer.parseInt(totalScore);
+  int intQuestionNumber = Integer.parseInt(questionNumber);
+  inStream.close();
+  playGame(intTotalScore, intQuestionNumber);
+
+}
+public static void playGame(int totalScore, int questionsAsked)
+{
+
   int questionScore = 0;
   int questions = 5;
-  int questionsAsked;
   Boolean correct;
   int[][] scoreAndQuestion = new int[questions][2];
 
-
-  for(questionsAsked = 0; questionsAsked <questions; questionsAsked++)
+  for(questionsAsked = questionsAsked; questionsAsked <questions; questionsAsked++)
   {
 
     createQuestion(questions);
@@ -29,6 +61,11 @@ public static void playGame()
     totalScore = totalScore + questionScore;
     scoreAndQuestion[questionsAsked][0] = questionScore;
     scoreAndQuestion[questionsAsked][1] = questionsAsked + 1;
+    try{
+      writeFile(Integer.toString(totalScore), Integer.toString(questionsAsked+1));
+    }catch(IOException e){
+      e.printStackTrace();
+    }
     prInt(scoreAndQuestion[questionsAsked][0]);
     prInt(scoreAndQuestion[questionsAsked][1]);
 
@@ -58,7 +95,18 @@ public static void userAnswer(String[] questionBank, String[] answerBank)
   int questionNumber = randomQuestionNumber();
   String question = questionBank[questionNumber];
   String answer = input(questionBank[questionNumber]);
-  marking(answerBank[questionNumber], question, answer);
+  if(answer.equalsIgnoreCase("exit"))
+  {
+
+    System.exit(0);
+
+  }
+  else
+  {
+
+    marking(answerBank[questionNumber], question, answer);
+
+  }
 
 }
 public static void marking(String correctAnswer, String question, String userAnswer)
@@ -214,6 +262,23 @@ public static void prInt(int i)
   println(Integer.toString(i));
 
 }
+public static void writeFile(String totalScore, String questionsAsked) throws IOException
+{
+
+  PrintWriter outputStream = new PrintWriter(new FileWriter("mydata2.txt"));
+  BufferedReader inStream = new BufferedReader(new FileReader("mydata2.txt"));
+
+  int NumberofNames = 3;
+
+  String[][] names = new String[5][2];
+  names[0][0] = totalScore;
+  names[0][1] = questionsAsked;
+
+  outputStream.println(names[0][0]);
+  outputStream.println(names[0][1]);
+  outputStream.close();
+
+}
 static String printarray (int[][] array, int questionsAsked)
 {
    String txt = "";
@@ -232,7 +297,7 @@ static String printarray (int[][] array, int questionsAsked)
 
 static void report (String txt)
 {
-   System.out.println(txt);
+   println(txt);
 }
 
 
