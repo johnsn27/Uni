@@ -1,8 +1,14 @@
+/*
+Author Nathan Johnson
+Program is a quiz game that can progress and reload it from a file
+*/
 import java.util.*;
 import java.io.*;
+
 class miniproject
 {
-
+// this is where the program starts
+// this asks whether the user wants to load a previous game (saved in a file) or start new game
 public static void main(String []p)
 {
 
@@ -26,39 +32,47 @@ public static void main(String []p)
    System.exit(0);
 
 }
+// this loads a saved game from a file
 public static void askToResume() throws IOException
 {
 
   BufferedReader inStream = new BufferedReader(new FileReader("mydata2.txt"));
-  String[][] names = new String[5][2];
+  String[][] questionsAndScore = new String[5][2];
   String totalScore;
   String questionNumber;
-  names[0][0] = inStream.readLine();
-  names[0][1] = inStream.readLine();
-  totalScore = names[0][0];
-  questionNumber = names[0][1];
-  println(totalScore);
-  println(questionNumber);
+  questionsAndScore[0][0] = inStream.readLine();
+  questionsAndScore[0][1] = inStream.readLine();
+  totalScore = questionsAndScore[0][0];
+  questionNumber = questionsAndScore[0][1];
   int intTotalScore = Integer.parseInt(totalScore);
   int intQuestionNumber = Integer.parseInt(questionNumber);
   inStream.close();
   playGame(intTotalScore, intQuestionNumber);
 
 }
+// this asks a number of questions, tells the user if they are correct and keeps a score
 public static void playGame(int totalScore, int questionsAsked)
 {
 
   int questionScore = 0;
-  int questions = 5;
+  final int questions = 5;
   Boolean correct;
   int[][] scoreAndQuestion = new int[questions][2];
 
   for(questionsAsked = questionsAsked; questionsAsked <questions; questionsAsked++)
   {
 
-    createQuestion(questions);
-    questionScore = score(questions);
-    totalScore = totalScore + questionScore;
+    String[][] questionBank = createQuestion(questions);
+    int questionNumber = randomQuestionNumber(); //pass q num into different question and mark methods
+    String answer = userAnswer(questionBank, questionNumber);
+
+    if(marking(questionBank, questionNumber, answer))
+    {
+
+      questionScore = score();
+      totalScore = totalScore + questionScore;
+
+    }
     scoreAndQuestion[questionsAsked][0] = questionScore;
     scoreAndQuestion[questionsAsked][1] = questionsAsked + 1;
     try{
@@ -66,19 +80,18 @@ public static void playGame(int totalScore, int questionsAsked)
     }catch(IOException e){
       e.printStackTrace();
     }
-    prInt(scoreAndQuestion[questionsAsked][0]);
-    prInt(scoreAndQuestion[questionsAsked][1]);
 
   }
   System.out.print("Score: ");
   quicksort(scoreAndQuestion,0,4);
-  report("Result is: " + printarray(scoreAndQuestion, questionsAsked));
+  println("Result is: " + printarray(scoreAndQuestion, questionsAsked));
   System.out.print("Total Score: ");
   prInt(totalScore);
 
 
 }
-public static void createQuestion(int questions)
+// setting a question and its corresponding answer and storing it in an array
+public static String[][] createQuestion(int questions)
 {
 
    Question q1 = initQuestion("Who won the Premier League in 2017?", "Chelsea");
@@ -86,104 +99,108 @@ public static void createQuestion(int questions)
    Question q3 = initQuestion("Who won the Ashes in 2015?", "England");
    Question q4 = initQuestion("Who won the mens singles at Wimbledon 2017?", "Roger Federer");
    Question q5 = initQuestion("Who won the 100m sprint at the 2017 World Championships?", "Justin Gatlin");
-   initArray(q1,q2,q3,q4,q5,questions);
+   String[][] questionBank = new String[questions][2];
+   questionBank[0][0] = questionToString(q1);
+   questionBank[1][0] = questionToString(q2);
+   questionBank[2][0] = questionToString(q3);
+   questionBank[3][0] = questionToString(q4);
+   questionBank[4][0] = questionToString(q5);
+   questionBank[0][1] = answerToString(q1);
+   questionBank[1][1] = answerToString(q2);
+   questionBank[2][1] = answerToString(q3);
+   questionBank[3][1] = answerToString(q4);
+   questionBank[4][1] = answerToString(q5);
+   return questionBank;
 
 }
-public static void userAnswer(String[] questionBank, String[] answerBank)
+// getting the users answer to a question
+public static String userAnswer(String[][] questionBank, int questionNumber)
 {
 
-  int questionNumber = randomQuestionNumber();
-  String question = questionBank[questionNumber];
-  String answer = input(questionBank[questionNumber]);
+  String question = questionBank[questionNumber][0];
+  String answer = input(question);
   if(answer.equalsIgnoreCase("exit"))
   {
 
     System.exit(0);
 
   }
-  else
-  {
-
-    marking(answerBank[questionNumber], question, answer);
-
-  }
+  return answer;
 
 }
-public static void marking(String correctAnswer, String question, String userAnswer)
+// this compares the users answer and the stored answer and if its correct it returns correct as true
+// it also allows the user to attempt a question 3 times
+public static Boolean marking(String[][] questionBank, int questionNumber, String userAnswer)
 {
 
-  Boolean correct = true;
-  if(userAnswer.equalsIgnoreCase(correctAnswer))
-  {
+  Boolean correct = false;
+  String correctAnswer = questionBank[questionNumber][1];
 
-    println("Correct");
+      if(userAnswer.equalsIgnoreCase(correctAnswer))
+      {
 
-  }
-  else
-  {
+        println("Correct");
+        correct = true;
 
-    println("Wrong- try again");
-    retryUserAnswer(correctAnswer, question);
+      }
+      else
+      {
 
-  }
+        println("Wrong- try again");
+        if(retryUserAnswer(questionBank, questionNumber).equalsIgnoreCase(correctAnswer))
+        {
 
+          println("Correct");
+          correct = true;
+
+        }
+        else
+        {
+
+          println("Wrong- try again");
+          if(retryUserAnswer(questionBank, questionNumber).equalsIgnoreCase(correctAnswer))
+          {
+
+            println("Correct");
+            correct = true;
+
+          }
+          else
+          {
+
+            println("Wrong- try again");
+
+          }
+        }
+      }
+
+  return correct;
 }
-public static void retryUserAnswer(String correctAnswer, String question)
+// the program goes here if the answer given by the user was incorrect and gets the users new answer
+public static String retryUserAnswer(String[][] questionBank, int questionNumber)
 {
 
+  String question = questionBank[questionNumber][0];
   String answer = input(question);
-  if(answer.equalsIgnoreCase(correctAnswer))
+  if(answer.equalsIgnoreCase("exit"))
   {
 
-    println("Correct");
+    System.exit(0);
 
   }
-  else
-  {
 
-    println("Wrong- try again");
-    answer = input(question);
-    if(answer.equalsIgnoreCase(correctAnswer))
-    {
-
-      println("Correct");
-
-    }
-    else
-    {
-
-      println("Wrong- try again");
-
-    }
-  }
-
+  return answer;
 }
-public static int score(int questions)
+// this gets a random score between 1 to 6
+public static int score()
 {
 
   int score;
-  score = (int)(Math.random()*6) + 1;  //set up array and store scores for each question in it
-  return score; //look at main in quicksort and try and integrate them in
+  score = (int)(Math.random()*6) + 1;
+  return score;
 
 }
-public static void initArray(Question q1, Question q2, Question q3, Question q4, Question q5, int questions)
-{
-
-  String[] questionBank = new String[questions];
-  String[] answerBank = new String[questions];
-  questionBank[0] = questionToString(q1);
-  questionBank[1] = questionToString(q2);
-  questionBank[2] = questionToString(q3);
-  questionBank[3] = questionToString(q4);
-  questionBank[4] = questionToString(q5);
-  answerBank[0] = answerToString(q1);
-  answerBank[1] = answerToString(q2);
-  answerBank[2] = answerToString(q3);
-  answerBank[3] = answerToString(q4);
-  answerBank[4] = answerToString(q5);
-  userAnswer(questionBank, answerBank);
-
-}
+// this get a random question number between 0 to 4
 public static int randomQuestionNumber()
 {
 
@@ -192,6 +209,7 @@ public static int randomQuestionNumber()
   return value;
 
 }
+// Convert a question record details to a String eg to print
 public static String questionToString(Question q)
 {
 
@@ -199,6 +217,7 @@ public static String questionToString(Question q)
     return result;
 
 }
+// Convert a answer record details to a String eg to print
 public static String answerToString(Question q)
 {
 
@@ -206,6 +225,7 @@ public static String answerToString(Question q)
     return result;
 
 }
+// create and initialise a question.
 public static Question initQuestion(String question, String answer)
 {
    Question q = new Question();
@@ -215,32 +235,29 @@ public static Question initQuestion(String question, String answer)
 
    return q;
 }
-
+// return the question from a question record
 public static String getQuestion (Question q)
 {
  return q.question;
 }
-
-// Return the id from a student record
+// return the answer from a question record
 public static String getAnswer (Question q)
 {
  return q.answer;
 }
-
+// set the question returning the updated record
 public static Question setQuestion (Question q, String question)
 {
  q.question = question;
  return q;
 }
-
-
-// Set the name of a student returning the updated record
+// set the answer returning the updated record
 public static Question setAnswer (Question q, String answer)
 {
  q.answer = answer;
  return q;
 }
-
+// general input method
 public static String input(String message)
 {
 
@@ -250,18 +267,21 @@ public static String input(String message)
   return ans;
 
 }
+// general print line method
 public static void println(String m)
 {
 
   System.out.println(m);
 
 }
+// general print integer method
 public static void prInt(int i)
 {
 
   println(Integer.toString(i));
 
 }
+// writes the amount of questions asked and the current total score to a file
 public static void writeFile(String totalScore, String questionsAsked) throws IOException
 {
 
@@ -270,15 +290,16 @@ public static void writeFile(String totalScore, String questionsAsked) throws IO
 
   int NumberofNames = 3;
 
-  String[][] names = new String[5][2];
-  names[0][0] = totalScore;
-  names[0][1] = questionsAsked;
+  String[][] questionsAndScore = new String[5][2];
+  questionsAndScore[0][0] = totalScore;
+  questionsAndScore[0][1] = questionsAsked;
 
-  outputStream.println(names[0][0]);
-  outputStream.println(names[0][1]);
+  outputStream.println(questionsAndScore[0][0]);
+  outputStream.println(questionsAndScore[0][1]);
   outputStream.close();
 
 }
+// prints the sorted score in decending order
 static String printarray (int[][] array, int questionsAsked)
 {
    String txt = "";
@@ -294,14 +315,7 @@ static String printarray (int[][] array, int questionsAsked)
  return txt;
 
 }
-
-static void report (String txt)
-{
-   println(txt);
-}
-
-
-// quicksort: algorithm based no Gosling's variant from nist
+// quicksort algorithm that sorts scores in decending order with the question number next to each score
 static void quicksort (int[][] array, int from, int upto)
 {
     // print details of call
@@ -310,22 +324,13 @@ static void quicksort (int[][] array, int from, int upto)
     if (from < upto)
     {
 
-
-      // make the pivot value middle of array
       int pivot = array[(from+upto)/2][0];
-
-      // set up two pointers into the array
       int lower = from, upper = upto;
 
       while (lower <= upper)
       {
-        // first move lower up over small elements
     while ((array[lower][0] < pivot) && (lower < upto)) { lower++; }
-
-        // otherwise move upper down over large elements
     while ((array[upper][0] > pivot) && (upper > from)) { upper--; }
-
-        // if pointers haven't crossed
         if (lower <= upper)
         {
       int tmp = array[upper][0];
@@ -339,8 +344,6 @@ static void quicksort (int[][] array, int from, int upto)
     }
     }
 
-
-
    if (from < upper) quicksort(array,from,upper);
    if (lower < upto) quicksort(array,lower,upto);
 
@@ -348,11 +351,11 @@ static void quicksort (int[][] array, int from, int upto)
 
 
  }
-}
+} //end class miniproject
 class Question
 {
 
-String question; // The Questions full name
-String answer;   // Their unique ID number
+String question;
+String answer;
 
-} // END class Question
+} // end class Question
